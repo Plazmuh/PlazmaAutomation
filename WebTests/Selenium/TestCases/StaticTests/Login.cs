@@ -1,7 +1,78 @@
-﻿
+﻿using NUnit.Framework;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System.Threading.Tasks;
+using WebAutomation.Drivers.SeleniumWebDriverModel;
+using WebAutomation.Helpers;
+
 namespace WebAutomation.WebTests.Selenium.TestCases.StaticTests
 {
-    class Login
+    public class Login
     {
+        #region Properies
+
+        protected IWebDriver Driver = new ChromeDriver();
+        private HomePage Page = new HomePage();
+
+        #endregion Properies
+
+        #region Test Case
+
+        /// <summary>
+        /// Initializes Driver, and heads to desired Homepage for Testing
+        /// </summary>
+        /// <returns></returns>
+        [SetUp]
+        public async Task SetUpTestAsync()
+        {
+            Page = new HomePage(Driver);
+            if (!await Page.BeforeTestAsync("https://www.affirm.com/").ConfigureAwait(false))
+                Assert.Fail("Failed going to Home Page...");
+
+            await Task.Delay(5000).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Test: Attempt signing in through UI.
+        /// </summary>
+        /// <returns></returns>
+        [Test, Order(1)]
+        public async Task CustomerSignInTestAsync()
+        {
+            // Wait until elements are visible then click it
+            ElementUtility.GetElement(Driver, ElementUtility.LocationTag.CssSelector, "#gatsby-focus-wrapper > div.Header-outer--NMN0k > div > div > div.Container-container--3LGAe.Header-wrapper--rEEKq.Header-hideOnSmartphone--3LTpT > a:nth-child(4) > span", 60).Click();
+            await Task.Delay(3000);
+
+            // Wait for Mobile Sign-in number to be present -- Then send random mobile number
+            string mobileSignInNum = "1234567890";
+            ElementUtility.GetElement(Driver, ElementUtility.LocationTag.CssSelector, "#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > form > div.pro1M70H9P9.pro1zXd09Vc > div > div > input", 60).Click();
+            Driver.FindElement(By.CssSelector("#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > form > div.pro1M70H9P9.pro1zXd09Vc > div > div > input")).SendKeys(mobileSignInNum);
+
+            // Click Continue -- Make sure it's valid and we don't have a popup
+            ElementUtility.GetElement(Driver, ElementUtility.LocationTag.CssSelector, "#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > form > div:nth-child(3) > button", 60).Click();
+            await Task.Delay(1000);
+
+            if (ElementUtility.GetElement(Driver, ElementUtility.LocationTag.CssSelector, "#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > div.pro3PQmJOfN.proPEJz23Bn > strong > p", 60).Displayed)
+                Assert.Fail("Looks like we don't have a valid test sign-in Number.");
+
+            // We just texted you Popup -- continue with Login Auth.
+            // TODO
+
+            // Test Passed.
+            Assert.Pass();
+        }
+
+        /// <summary>
+        /// Tear the Driver down once done
+        /// </summary>
+        /// <returns></returns>
+        [TearDown]
+        public async Task TearDownTestAsync()
+        {
+            Page.TearDown();
+            await Task.Delay(300);
+        }
+
+        #endregion Test Case
     }
 }

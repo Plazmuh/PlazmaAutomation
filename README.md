@@ -1,6 +1,6 @@
 # Raymond Dasilva - Affirm Candidate
 # This REPO is used for Automation Testing Web (Selenium) / Mobile (Appium)
-# Jenkins addition - TBD
+# Jenkins Integration - At request
 
 
 - Open solution in VS 

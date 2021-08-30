@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebAutomation.Helpers
 {
@@ -8,61 +9,80 @@ namespace WebAutomation.Helpers
     {
         private const int TIMEOUT = 1;
 
-        public enum LocationTag
-        {
-            CssSelector = 0,
-            Xpath = 1,
-            Id = 2,
-            Name = 3,
-            LinkText = 4
-        }
-
         /// <summary>
         /// Get element By Enum
         /// </summary>
         /// <param name="driver"></param>
         /// <param name="cssSelector"></param>
         /// <param name="Timeout"></param>
-        /// <returns></returns>
-        public static IWebElement GetElement(IWebDriver driver, LocationTag tag, string value, int Timeout = TIMEOUT)
+        /// <returns>IWebElement of the visible element</returns>
+        public static IWebElement GetElement(IWebDriver driver, By locator, int Timeout = TIMEOUT)
         {
-            var element = driver.FindElement(By.CssSelector(value));
+            var element = driver.FindElement(locator);
 
             DateTime start = DateTime.Now;
             while (DateTime.Now.Subtract(start).Minutes < Timeout && element == null || (element != null && !element.Displayed))
             {
-                switch (tag)
-                {
-                    case LocationTag.CssSelector:
-                        element = driver.FindElement(By.CssSelector(value));
-                        break;
-
-                    case LocationTag.Xpath:
-                        element = driver.FindElement(By.XPath(value));
-                        break;
-
-                    case LocationTag.Id:
-                        element = driver.FindElement(By.Id(value));
-                        break;
-
-                    case LocationTag.Name:
-                        element = driver.FindElement(By.Name(value));
-                        break;
-
-                    case LocationTag.LinkText:
-                        element = driver.FindElement(By.LinkText(value));
-                        break;
-
-                    default:
-                        element = driver.FindElement(By.CssSelector(value));
-                        break;
-                }
+                element = driver.FindElement(locator);
             }
 
             if (element == null)
-                Assert.Fail($"Element was not found after {TIMEOUT} seconds");
+                throw new ArgumentException($"Element was not found after {TIMEOUT} seconds");
 
             return element;
         }
+
+
+        #region Processors
+
+        /// <summary>
+        /// Will check any given uri, and ensure it's valid
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns>A bool indicating success or failure of Uri</returns>
+        public bool IsValidUrl(string url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                Uri uriResult;
+                bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
+                    && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                return result;
+            }
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Will cause an asynchronous await based on miliseconds
+        /// </summary>
+        /// <param name="miliseconds"></param>
+        /// <returns></returns>
+        public static async Task PauseAsync(int miliseconds)
+        {
+            await Task.Delay(miliseconds).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Tear down any driver
+        /// </summary>
+        public static async Task TearDown(IWebDriver driver)
+        {
+            driver.Close();
+            await PauseAsync(100);
+        }
+
+        /// <summary>
+        /// Function gets the browsers we will be using for parallel testing from "AutomationSettings.resx"
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<string> BrowsersToRunWith()
+        {
+            string[] browsers = AutomationSettings.browsers.Split(',');
+            foreach (string browser in browsers)
+                yield return browser;
+        }
+
+        #endregion Processors
     }
 }

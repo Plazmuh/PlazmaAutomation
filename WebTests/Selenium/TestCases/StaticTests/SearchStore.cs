@@ -13,7 +13,7 @@ namespace WebAutomation.WebTests.Selenium.TestCases.StaticTests
     [TestFixture(typeof(ChromeDriver))]
     [Parallelizable(ParallelScope.Fixtures)]
     [Author("Raymond Dasilva", "raymond.dasilva@outlook.com")]
-    public class Login<TWebDriver> where TWebDriver : IWebDriver, new()
+    public class SearchStore<TWebDriver> where TWebDriver : IWebDriver, new()
     {
         private IWebDriver Driver;
 
@@ -57,30 +57,33 @@ namespace WebAutomation.WebTests.Selenium.TestCases.StaticTests
         }
 
         /// <summary>
-        /// Test: Attempt signing in through UI.
+        /// Test: Attempt Searching for a specific store, and opening it.
         /// </summary>
         /// <returns></returns>
         [Test, Order(1)]
-        public async Task CustomerSignInTestAsync()
+        public async Task SearchForStoreAsync()
         {
-            // Wait until elements are visible then click it
-            ElementUtility.GetElement(Driver, By.CssSelector("#gatsby-focus-wrapper > div.Header-outer--NMN0k > div > div > div.Container-container--3LGAe.Header-wrapper--rEEKq.Header-hideOnSmartphone--3LTpT > a:nth-child(4) > span"), 60).Click();
-            await Task.Delay(3000);
+            // Wait until search bar are visible then click it
+            var searchBar = ElementUtility.GetElement(Driver, By.CssSelector("#SearchBar"), 60);
+            searchBar.Click();
+            await ElementUtility.PauseAsync(1000);
 
-            // Wait for Mobile Sign-in number to be present -- Then send random mobile number
-            string mobileSignInNum = "1234567890";
-            var mobileNumberBox = ElementUtility.GetElement(Driver, By.CssSelector("#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > form > div.pro1M70H9P9.pro1zXd09Vc > div > div > input"), 60);
-            mobileNumberBox.SendKeys(mobileSignInNum);
+            // Click search bar and type in desired store (Best Buy)
+            string store = "Best Buy";
+            searchBar.SendKeys(store);
+            await ElementUtility.PauseAsync(1000);
 
-            // Click Continue -- Make sure it's valid and we don't have a popup
-            ElementUtility.GetElement(Driver, By.CssSelector("#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > form > div:nth-child(3) > button"), 60).Click();
-            await Task.Delay(1000);
+            // Make sure BestBuy is in the List -- And click it.
+            int listNumber = int.Parse(ElementUtility.GetElement(Driver, By.CssSelector("#searchContainer > div.Search-searchResultsDropdown--rr2yn > div > span.Search-searchResultsDropdown__title__count--1U8YM"), 90).Text);
+            if (listNumber != 1)
+                Assert.Fail("Best Buy was not populated in the list.");
 
-            if (ElementUtility.GetElement(Driver, By.CssSelector("#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > div.pro3PQmJOfN.proPEJz23Bn > strong > p"), 60).Displayed)
-                Assert.Fail("Looks like we don't have a valid test sign-in Number.");
+            ElementUtility.GetElement(Driver, By.CssSelector("#search-result-WGUM9CGP0OK9R3CL"), 60).Click();
+            await ElementUtility.PauseAsync(1000);
 
-            // We just texted you Popup -- continue with Login Auth.
-            // TODO
+            // Press Shop now -- Should open a new Tab.
+            ElementUtility.GetElement(Driver, By.CssSelector("#maincontent > div.Modal-modal--2164I.Modal-modal__open--39ICx > div.Modal-modal__wrapper--e1FXM > div > div.MerchantDetailsPage-buttons__container--3Vla9 > div > a > span")).Click();
+            await ElementUtility.PauseAsync(5000);
 
             // Test Passed.
             Assert.Pass();

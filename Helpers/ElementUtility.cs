@@ -32,7 +32,6 @@ namespace WebAutomation.Helpers
             return element;
         }
 
-
         #region Processors
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace WebAutomation.Helpers
         /// </summary>
         public static async Task TearDown(IWebDriver driver)
         {
-            driver.Close();
+            driver.Quit();
             await PauseAsync(100);
         }
 

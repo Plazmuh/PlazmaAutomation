@@ -1,12 +1,6 @@
-﻿using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.IE;
-using OpenQA.Selenium.Safari;
+﻿using OpenQA.Selenium;
 using System;
 using System.Threading.Tasks;
-using WebAutomation.Helpers;
 
 namespace WebAutomation.Helpers.PageObjs
 {
@@ -17,16 +11,16 @@ namespace WebAutomation.Helpers.PageObjs
         private IWebDriver driver;
 
         public HomePage(IWebDriver driver)
-        {            
+        {
             this.driver = driver;
-        }        
+        }
 
         #region Homepage functions
 
         /// <summary>
         /// Goes to Affirm's HomePage and wait until an element is visible, confirming it's loaded.
         /// </summary>
-        /// <returns>A boolean indicating success</returns>      
+        /// <returns>A boolean indicating success</returns>
         public async Task<bool> GoToHomePage()
         {
             try
@@ -43,8 +37,8 @@ namespace WebAutomation.Helpers.PageObjs
             catch (Exception ex)
             {
                 throw;
-            }                     
-        }                
+            }
+        }
 
         #endregion Homepage functions
     }

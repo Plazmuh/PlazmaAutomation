@@ -7,4 +7,4 @@
 - View --> Test Explorer
 - Run desired Tests
 
-Current Test Cases (1)
+Current Test Cases (2)

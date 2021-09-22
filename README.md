@@ -1,4 +1,4 @@
-# Raymond Dasilva - Affirm Candidate
+# Raymond Dasilva - Alkami Candidate
 # This REPO is used for Automation Testing Web (Selenium) / Mobile (Appium)
 # Jenkins Integration - At request
 

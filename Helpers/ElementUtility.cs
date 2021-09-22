@@ -17,7 +17,7 @@ namespace WebAutomation.Helpers
         /// <param name="Timeout"></param>
         /// <returns>IWebElement of the visible element</returns>
         public static IWebElement GetElement(IWebDriver driver, By locator, int Timeout = TIMEOUT)
-        {
+        {            
             var element = driver.FindElement(locator);
 
             DateTime start = DateTime.Now;
@@ -30,6 +30,38 @@ namespace WebAutomation.Helpers
                 throw new ArgumentException($"Element was not found after {TIMEOUT} seconds");
 
             return element;
+        }
+
+        /// <summary>
+        /// Makes sure all elements are at least visible before performing actions on them
+        /// </summary>
+        /// <param name="driver"></param>
+        /// <param name="cssSelector"></param>
+        /// <param name="Timeout"></param>
+        /// <returns>A value indicating if all elements are found</returns>
+        public static bool GetElements(IWebDriver driver, string[] locators, int Timeout = TIMEOUT)
+        {
+            if (driver == null || locators.Length == 0)
+                return false;
+
+            foreach (var field in locators)
+            {
+                if (!string.IsNullOrEmpty(field))
+                {
+                    var element = driver.FindElement(By.CssSelector(field));
+
+                    DateTime start = DateTime.Now;
+                    while (DateTime.Now.Subtract(start).Minutes < Timeout && element == null || (element != null && !element.Displayed))
+                        element = driver.FindElement(By.CssSelector(field));
+
+                    if (element == null)
+                        return false;
+                }
+                else
+                    return false;
+            }            
+
+            return true;
         }
 
         #region Processors

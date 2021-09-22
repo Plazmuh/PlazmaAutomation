@@ -68,7 +68,7 @@ namespace WebAutomation.WebTests.Selenium.TestCases.StaticTests
             elem.Click();
             await ElementUtility.PauseAsync(3000).ConfigureAwait(false);
 
-            // Wait until "See the platform" is visible then click it -- Should go to a new page
+            // Wait until "See the platform" is visible then click it -- Should go to a new page.
             ElementUtility.GetElement(Driver, By.CssSelector("#content > div > div > div > section.elementor-section.elementor-top-section.elementor-element.elementor-element-fb9ecb2.white-bg.home-sect2.elementor-section-boxed.elementor-section-height-default.elementor-section-height-default > div > div > div > div > div > div.elementor-element.elementor-element-22ee045.elementor-align-left.btn.elementor-widget.elementor-widget-global.elementor-global-1996.elementor-widget-button > div > div > a > span > span"), 60).Click();
             await ElementUtility.PauseAsync(3000).ConfigureAwait(false);
                       

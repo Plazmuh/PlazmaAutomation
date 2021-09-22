@@ -13,7 +13,7 @@ namespace WebAutomation.WebTests.Selenium.TestCases.StaticTests
     [TestFixture(typeof(ChromeDriver))]
     [Parallelizable(ParallelScope.Fixtures)]
     [Author("Raymond Dasilva", "raymond.dasilva@outlook.com")]
-    public class Login<TWebDriver> where TWebDriver : IWebDriver, new()
+    public class NavigatePage<TWebDriver> where TWebDriver : IWebDriver, new()
     {
         private IWebDriver Driver;
 
@@ -57,31 +57,21 @@ namespace WebAutomation.WebTests.Selenium.TestCases.StaticTests
         }
 
         /// <summary>
-        /// Test: Attempt signing in through UI.
+        /// Test: Go through a few different pages and make sure elements are visible
         /// </summary>
         /// <returns></returns>
         [Test, Order(1)]
-        public async Task CustomerSignInTestAsync()
+        public async Task NavigateAlkamiAsync()
         {
-            // Wait until elements are visible then click it
-            ElementUtility.GetElement(Driver, By.CssSelector("#gatsby-focus-wrapper > div.Header-outer--NMN0k > div > div > div.Container-container--3LGAe.Header-wrapper--rEEKq.Header-hideOnSmartphone--3LTpT > a:nth-child(4) > span"), 60).Click();
-            await Task.Delay(3000);
+            // Wait for Cookies pop-up to show, then accept. -- This will prevent future click intercepts if not handled
+            var elem = ElementUtility.GetElement(Driver, By.CssSelector("#cookie_action_close_header"), 60);            
+            elem.Click();
+            await ElementUtility.PauseAsync(3000).ConfigureAwait(false);
 
-            // Wait for Mobile Sign-in number to be present -- Then send random mobile number
-            string mobileSignInNum = "1234567890";
-            var mobileNumberBox = ElementUtility.GetElement(Driver, By.CssSelector("#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > form > div.pro1M70H9P9.pro1zXd09Vc > div > div > input"), 60);
-            mobileNumberBox.SendKeys(mobileSignInNum);
-
-            // Click Continue -- Make sure it's valid and we don't have a popup
-            ElementUtility.GetElement(Driver, By.CssSelector("#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > form > div:nth-child(3) > button"), 60).Click();
-            await Task.Delay(1000);
-
-            if (ElementUtility.GetElement(Driver, By.CssSelector("#Identity-container > div > div > div.pro1M70H9P9.proqW_lcgAc > div.pro3PQmJOfN.proPEJz23Bn > strong > p"), 60).Displayed)
-                Assert.Fail("Looks like we don't have a valid test sign-in Number.");
-
-            // We just texted you Popup -- continue with Login Auth.
-            // TODO
-
+            // Wait until "See the platform" is visible then click it -- Should go to a new page
+            ElementUtility.GetElement(Driver, By.CssSelector("#content > div > div > div > section.elementor-section.elementor-top-section.elementor-element.elementor-element-fb9ecb2.white-bg.home-sect2.elementor-section-boxed.elementor-section-height-default.elementor-section-height-default > div > div > div > div > div > div.elementor-element.elementor-element-22ee045.elementor-align-left.btn.elementor-widget.elementor-widget-global.elementor-global-1996.elementor-widget-button > div > div > a > span > span"), 60).Click();
+            await ElementUtility.PauseAsync(3000).ConfigureAwait(false);
+                      
             // Test Passed.
             Assert.Pass();
         }
